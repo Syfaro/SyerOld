@@ -4,8 +4,10 @@ var fs = require('fs')
   , async = require('async')
   , RegexBuilder = require('./regexBuilder');
 
-var client = new irc.Client('irc.esper.net', 'Syer', {
-	channels: ['#syertest'],
+var ircConfig = JSON.parse(fs.readFileSync('config/irc.json'));
+
+var client = new irc.Client(ircConfig.server, ircConfig.nick, {
+	channels: ircConfig.channels,
 	debug: true
 });
 
