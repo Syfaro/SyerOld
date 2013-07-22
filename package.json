@@ -1,0 +1,13 @@
+{
+	"name": "syer",
+	"description": "A modular Node.js IRC bot",
+	"author": "Syfaro Warraw <sy@syfaro.net>",
+	"version": "0.0.1",
+	"scripts": {
+		"test": "nodeunit tests"
+	},
+	"dependencies": {
+		"irc": "*",
+		"async": "*"
+	}
+}
