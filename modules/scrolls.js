@@ -58,7 +58,7 @@ var ScrollsStatsCommand = {
 			}
 		});
 	}
-}
+};
 
 var ScrollsPlayerCommand = {
 	Name: 'Scrolls Player Stats',
@@ -93,8 +93,51 @@ var ScrollsPlayerCommand = {
 			}
 		});
 	}
-}
+};
+
+var ScrollsCardInfoCommand = {
+	Name: 'Scrolls Card Info',
+	Command: {
+		Type: 'command',
+		Key: 'scroll'
+	},
+	Run: {
+		Channels: ['debug', 'scrolls', 'scrollshelp']
+	},
+	Help: {
+		Text: 'Displays information about a Scroll',
+		Example: '.scroll sister of the fox'
+	},
+	RunFunction: function(trigger, helpers, irc, callback) {
+		request('http://a.scrollsguide.com/scrolls?name=' + trigger.args[1].replace(/ /g, '+') + '&norules', function(err, response, body) {
+			try {
+				var data = JSON.parse(body);
+			} catch (e) {
+				callback('API error');
+			}
+
+			if(data.msg == 'success') {
+				var cost = '';
+				data.data = data.data[0];
+				if(data.data.costgrowth > 0) {
+					cost = ', Cost: ' + data.data.costgrowth + ' growth';
+				} else if(data.data.costorder > 0) {
+					cost = ', Cost: ' + data.data.costorder + ' order';
+				} else if(data.data.costenergy > 0) {
+					cost = ', Cost: ' + data.data.costenergy + ' energy';
+				}
+				var lines = [];
+				lines.push('Kind: ' + data.data.kind + ', Types: ' + data.data.types + cost + ', AP: ' + data.data.ap + ', AC: ' + data.data.ac + ', HP: ' + data.data.hp);
+				lines.push('Description: ' + data.data.description);
+				callback(null, helpers.reply(lines));
+			} else {
+				callback('Scroll not found');
+			}
+		});
+	}
+};
 
 RegisterCommand(ScrollsOnlineCommand);
 RegisterCommand(ScrollsStatsCommand);
 RegisterCommand(ScrollsPlayerCommand);
+RegisterCommand(ScrollsCardInfoCommand);

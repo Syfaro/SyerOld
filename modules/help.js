@@ -5,7 +5,7 @@ var HelpCommand = {
 		Key: 'help'
 	},
 	Run: {
-		
+
 	},
 	Help: {
 		Text: 'Displays help information about a command',
@@ -27,14 +27,25 @@ var HelpCommand = {
 		var found = false;
 		for(var i = 0; i < Modules.length; i++) {
 			var Module = Modules[i];
-			if(Module.CommandKey.toLowerCase() == trigger.args[1].toLowerCase()) {
-				callback(null, [helpers.reply(Module.Help), helpers.reply('Example - ' + Module.HelpExample)]);
+			if(Module.CommandKey !== undefined && Module.CommandKey.toLowerCase() == trigger.args[1].toLowerCase()) {
+				callback(null, [helpers.reply(Module.Help + ', Example: '), helpers.reply(Module.HelpExample)]);
 				found = true;
 			}
 		}
 
 		if(!found) {
-			callback('No command found');
+			var really = false;
+			for(var i = 0; i < Modules.length; i++) {
+				var Module = Modules[i];
+				if(Module.Command.test(trigger.args[1])) {
+					callback(null, [helpers.reply(Module.Help + ', Example: '), helpers.reply(Module.HelpExample)]);
+					really = true;
+				}
+			}
+
+			if(!really) {
+				callback('No command found');
+			}
 		}
 	}
 };

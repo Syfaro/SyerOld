@@ -2,13 +2,28 @@ var fs = require('fs')
   , vm = require('vm')
   , irc = require('irc')
   , async = require('async')
-  , RegexBuilder = require('./regexBuilder');
+  , RegexBuilder = require('./regexBuilder')
+  , Knex = require('knex');
 
 var ircConfig = JSON.parse(fs.readFileSync('config/irc.json'));
 
 var client = new irc.Client(ircConfig.server, ircConfig.nick, {
 	channels: ircConfig.channels,
 	debug: true
+});
+
+var Knex = require('knex');
+
+var mysqlInfo = JSON.parse(fs.readFileSync('config/mysql.json'));
+var knex = Knex.Initialize({
+	client: 'mysql',
+	connection: {
+		host: mysqlInfo.host,
+		user: mysqlInfo.user,
+		password: mysqlInfo.pass,
+		database: mysqlInfo.db,
+		charset: 'utf8'
+	}
 });
 
 var Modules = [];
@@ -106,6 +121,7 @@ var BotFunctions = {
 			}
 		}
 	},
+	SQL: knex,
 	Groups: {
 		GetChannels: function(GroupName) {
 			return BotData.Groups[GroupName];
@@ -205,7 +221,15 @@ var MainMessageHandler = function(from, to, message, info, Module, callback) {
 	Module.RunFunction(Trigger, {
 		reply: function(line) {
 			if(Trigger.isChannel) {
-				return from + ': ' + line;
+				if(typeof line == 'string') {
+					return from + ': ' + line;
+				} else {
+					var lines = [];
+					for(var i = 0; i < line.length; i++) {
+						lines.push(from + ': ' + line[i]);
+					}
+					return lines;
+				}
 			} else {
 				return line;
 			}

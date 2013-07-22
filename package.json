@@ -9,6 +9,9 @@
   "dependencies": {
     "irc": "*",
     "async": "*",
-    "request": "~2.22.0"
+    "request": "~2.22.0",
+    "knex": "~0.1.8",
+    "mysql": "~2.0.0-alpha8",
+    "irc-colors": "~1.0.3"
   }
 }
