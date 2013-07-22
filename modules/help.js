@@ -13,8 +13,14 @@ var HelpCommand = {
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
 		if(trigger.args[1] === undefined) {
-			callback('No command specified');
-			return;
+			var Modules = syer.Global.GetAllModules();
+			var names = [];
+			for(var i = 0; i < Modules.length; i++) {
+				if(Modules[i].CommandKey !== undefined) {
+					names.push(Modules[i].CommandKey + ((Modules[i].AdminOnly) ? '*' : ''));
+				}
+			}
+			return callback(null, 'Commands: ' + names.sort().join(', '));
 		}
 
 		var Modules = syer.Global.GetAllModules();
