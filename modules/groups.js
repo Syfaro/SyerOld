@@ -5,7 +5,6 @@ var AddToGroupCommand = {
 		Key: 'groupadd'
 	},
 	Run: {
-		Channels: ['debug'],
 		Admin: true
 	},
 	Help: {
@@ -27,7 +26,6 @@ var RemoveFromGroupCommand = {
 		Key: 'grouprem'
 	},
 	Run: {
-		Channels: ['debug'],
 		Admin: true
 	},
 	Help: {
@@ -42,5 +40,47 @@ var RemoveFromGroupCommand = {
 	}
 };
 
+var AddGroupCommand = {
+	Name: 'Create New Group',
+	Command: {
+		Type: 'command',
+		Key: 'addgroup'
+	},
+	Run: {
+		Admin: true
+	},
+	Help: {
+		Text: 'Adds a new group',
+		Example: '.addgroup minecrafthelp'
+	},
+	RunFunction: function(trigger, helpers, irc, callback) {
+		syer.Groups.AddGroup(trigger.args[1]);
+		syer.Groups.SaveChannels();
+		callback(null, helpers.reply('added!'));
+	}
+};
+
+var RemoveGroupCommand = {
+	Name: 'Remove Group',
+	Command: {
+		Type: 'command',
+		Key: 'remgroup'
+	},
+	Run: {
+		Admin: true
+	},
+	Help: {
+		Text: 'Deletes a group',
+		Example: '.delgroup minecrafthelp'
+	},
+	RunFunction: function(trigger, helpers, irc, callback) {
+		syer.Groups.RemoveGroup(trigger.args[1]);
+		syer.Groups.SaveChannels();
+		callback(null, helpers.reply('removed!'));
+	}
+};
+
 RegisterCommand(AddToGroupCommand);
 RegisterCommand(RemoveFromGroupCommand);
+RegisterCommand(AddGroupCommand);
+RegisterCommand(RemoveGroupCommand);

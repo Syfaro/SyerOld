@@ -5,7 +5,7 @@ var PingPongCommand = {
 		Key: 'ping'
 	},
 	Run: {
-		Channels: ['debug']
+
 	},
 	Help: {
 		Text: 'Has the bot send pong, useful for testing if it is still working.',

@@ -4,7 +4,7 @@ var commandConfig = JSON.parse(fs.readFileSync('config/commands.json'));
 var botNick = JSON.parse(fs.readFileSync('config/irc.json')).nick;
 
 var BuildRegex = function(start) {
-	return new RegExp('^' + start + ' ?(.*)? ?', 'i');
+	return new RegExp('^' + start + '(?: (.*))? ?$', 'i');
 };
 
 var RegexBuilder = function(commandType, command) {

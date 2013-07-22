@@ -12,6 +12,7 @@ var client = new irc.Client(ircConfig.server, ircConfig.nick, {
 });
 
 var Modules = [];
+var Joins = [];
 
 var BotData = {};
 
@@ -84,6 +85,27 @@ var BotFunctions = {
 			return BotData.Banned = BotFunctions.ConfigHandler.GetConfig('banned');
 		}
 	},
+	Channels: {
+		Add: function(Channel) {
+			client.join(Channel);
+			BotData.Channels.push(Channel);
+		},
+		Remove: function(Channel) {
+			client.part(Channel);
+			BotData.Channels.remove(Channel);
+		},
+		Save: function() {
+			return BotFunctions.ConfigHandler.SaveConfig('channel', BotData.Channels);
+		},
+		Load: function() {
+			return BotData.Channels = BotFunctions.ConfigHandler.GetConfig('channel');
+		},
+		JoinLoaded: function() {
+			for(var i = 0; i < BotData.Channels.length; i++) {
+				client.join(BotData.Channels[i]);
+			}
+		}
+	},
 	Groups: {
 		GetChannels: function(GroupName) {
 			return BotData.Groups[GroupName];
@@ -96,6 +118,12 @@ var BotFunctions = {
 		},
 		AddChannel: function(GroupName, ChannelName) {
 			return BotData.Groups[GroupName].push(ChannelName);
+		},
+		AddGroup: function(GroupName) {
+			return BotData.Groups[GroupName] = [];
+		},
+		RemoveGroup: function(GroupName) {
+			return delete BotData.Groups[GroupName];
 		},
 		SaveChannels: function() {
 			return BotFunctions.ConfigHandler.SaveConfig('groups', BotData.Groups);
@@ -117,6 +145,7 @@ var InitDataStores = function() {
 	BotFunctions.Groups.Load();
 	BotFunctions.Admins.Load();
 	BotFunctions.Banned.Load();
+	BotFunctions.Channels.Load();
 };
 
 var MainMessageHandler = function(from, to, message, info, Module, callback) {
@@ -184,6 +213,7 @@ var MainMessageHandler = function(from, to, message, info, Module, callback) {
 	}, client, function(err, output) {
 		if(err) {
 			client.say(to, 'Error: ' + err);
+			callback();
 			return console.error(err);
 		}
 
@@ -229,6 +259,55 @@ var HandleMessage = function(from, to, message, info) {
 	});
 };
 
+var MainJoinHandler = function(channel, nick, info, Module, callback) {
+	Module.RunFunction({
+		channel: channel,
+		nick: nick,
+		rawInfo: info
+	}, client, function(err, output) {
+		if(err) {
+			client.say(channel, 'Error: ' + err);
+			callback();
+			return console.error(err);
+		}
+
+		if(output !== null || output !== undefined) {
+			if(typeof output == 'string') {
+				client.say(channel, output);
+			} else {
+				for(var i = 0; i < output.length; i++) {
+					client.say(channel, output[i]);
+				}
+			}
+		}
+
+		callback();
+	});
+}
+
+var HandleJoin = function(channel, nick, info) {
+	// Async loop over all join handlers, for speed
+	async.each(Joins, function(Module, callback) {
+		// Test to see if it matches the RegExp
+		if(BotFunctions.Banned.Is(nick)) {
+			callback();
+			return;
+		}
+
+		if(Module.AdminOnly) {
+			BotFunctions.Admins.Is(nick, function(result) {
+				if(!result) {
+					return callback();
+				} else {
+					MainJoinHandler(channel, nick, info, Module, callback);
+				}
+			});
+		} else {
+			MainJoinHandler(channel, nick, info, Module, callback);
+		}
+	});
+};
+
 var InitListeners = function() {
 	client.addListener('message', function(from, to, message, info) {
 		HandleMessage(from, to, message, info);
@@ -236,6 +315,14 @@ var InitListeners = function() {
 
 	client.addListener('pm', function(from, message, info) {
 		HandleMessage(from, from, message, info);
+	});
+
+	client.addListener('join', function(channel, nick, info) {
+		HandleJoin(channel, nick, info);
+	});
+
+	client.addListener('error', function() {
+		console.error('IRC error');
 	});
 };
 
@@ -289,6 +376,9 @@ var LoadModules = function(callback) {
 						BuiltCommand.RunFunction = command.RunFunction;
 
 						Modules.push(BuiltCommand);
+					},
+					RegisterJoin: function(joinHandler) {
+						Joins.push(joinHandler);
 					}
 				}
 				try {

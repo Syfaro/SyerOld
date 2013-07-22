@@ -5,7 +5,6 @@ var JoinCommand = {
 		Key: 'join'
 	},
 	Run: {
-		Channels: ['debug'],
 		Admin: true
 	},
 	Help: {
@@ -13,8 +12,8 @@ var JoinCommand = {
 		Example: '.join #syer'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
-		irc.join(trigger.args[1]);
-		callback(null, helpers.reply('joined!'));
+		syer.Channels.Add(trigger.args[1]);
+		syer.Channels.Save();
 	}
 };
 
@@ -25,7 +24,6 @@ var PartCommand = {
 		Key: 'part'
 	},
 	Run: {
-		Channels: ['debug'],
 		Admin: true
 	},
 	Help: {
@@ -33,10 +31,29 @@ var PartCommand = {
 		Example: '.part #syer'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
-		irc.part(trigger.args[1]);
-		callback(null, helpers.reply('parted!'));
+		syer.Channels.Remove(trigger.args[1]);
+		syer.Channels.Save();
+	}
+}
+
+var JoinSavedCommand = {
+	Name: 'JoinSaved',
+	Command: {
+		Type: 'command',
+		Key: 'joinsaved'
+	},
+	Run: {
+		Admin: true
+	},
+	Help: {
+		Text: 'Joins saved commands',
+		Example: '.joinsaved'
+	},
+	RunFunction: function(trigger, helpers, irc, callback) {
+		syer.Channels.JoinLoaded();
 	}
 }
 
 RegisterCommand(JoinCommand);
 RegisterCommand(PartCommand);
+RegisterCommand(JoinSavedCommand);
