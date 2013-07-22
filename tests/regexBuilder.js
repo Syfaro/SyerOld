@@ -40,9 +40,9 @@ exports['command space'] = function(test) {
 	test.strictEqual(RegEx.test('.test '), true);
 	test.strictEqual(RegEx.test(botName + ': test '), true);
 	test.strictEqual(RegEx.test(botName + ', test '), true);
-	test.equal(RegEx.exec('.test ')[1], undefined);
-	test.equal(RegEx.exec(botName + ': test ')[1], undefined);
-	test.equal(RegEx.exec(botName + ', test ')[1], undefined);
+	test.equal(RegEx.exec('.test ')[1], '');
+	test.equal(RegEx.exec(botName + ': test ')[1], '');
+	test.equal(RegEx.exec(botName + ', test ')[1], '');
 	test.done();
 };
 
