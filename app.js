@@ -29,7 +29,7 @@ var knex = Knex.Initialize({
 	}
 });
 
-app.listen(3000);
+app.listen(7937);
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
