@@ -164,6 +164,7 @@ var BotFunctions = {
 			return BotData.Groups[GroupName].remove(ChannelName);
 		},
 		AddChannel: function(GroupName, ChannelName) {
+			if(BotData.Groups[GroupName] === undefined) BotData.Groups[GroupName] = [];
 			return BotData.Groups[GroupName].push(ChannelName);
 		},
 		AddGroup: function(GroupName) {
