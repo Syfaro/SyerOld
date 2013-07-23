@@ -3,7 +3,10 @@ var fs = require('fs')
   , irc = require('irc')
   , async = require('async')
   , RegexBuilder = require('./regexBuilder')
-  , Knex = require('knex');
+  , Knex = require('knex')
+  , express = require('express')
+  , app = express()
+  , exec = require('child_process').exec;
 
 var ircConfig = JSON.parse(fs.readFileSync('config/irc.json'));
 
@@ -26,6 +29,14 @@ var knex = Knex.Initialize({
 	}
 });
 
+app.listen(3000);
+app.set('view engine', 'jade');
+app.use(express.favicon());
+app.use(express.logger('dev'));
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(app.router);
+
 var Modules = [];
 var Joins = [];
 
@@ -46,10 +57,18 @@ Array.prototype.remove = function() {
 var BotFunctions = {
 	ConfigHandler: {
 		GetConfig: function(ConfigName) {
-			return JSON.parse(fs.readFileSync('config/' + ConfigName.toLowerCase() + '.json'));
+			var config;
+			try {
+				config = JSON.parse(fs.readFileSync('config/' + ConfigName.toLowerCase() + '.json'));
+			} catch (e) {
+				console.log('Error loading config for ' + ConfigName + ', ignoring file');
+				config = {};
+			}
+
+			return config;
 		},
 		SaveConfig: function(ConfigName, Data) {
-			return fs.writeFileSync('config/' + ConfigName.toLowerCase() + '.json', JSON.stringify(Data));
+			return fs.writeFileSync('config/' + ConfigName.toLowerCase() + '.json', JSON.stringify(Data, undefined, '\t'));
 		}
 	},
 	Global: {
@@ -58,6 +77,18 @@ var BotFunctions = {
 		},
 		GetAllModules: function() {
 			return Modules;
+		},
+		ReloadModules: function() {
+			LoadModules();
+		},
+		exec: function(command, callback) {
+			exec(command, callback);
+		},
+		LoadAllData: function() {
+			return BotData = BotFunctions.ConfigHandler.GetConfig('all');
+		},
+		SaveAllData: function() {
+			return BotFunctions.ConfigHandler.SaveConfig('all', BotData);
 		}
 	},
 	Admins: {
@@ -154,14 +185,46 @@ var BotFunctions = {
 
 			return BotData.Groups[GroupName].indexOf(ChannelName) === -1 ? false : true;
 		}
+	},
+	Git: {
+		Set: function(GitInfo) {
+			return BotData.Git = GitInfo;
+		},
+		Get: function() {
+			return BotData.Git;
+		},
+		Save: function() {
+			return BotFunctions.ConfigHandler.SaveConfig('git', BotData.Git);
+		},
+		Load: function() {
+			return BotData.Git = BotFunctions.ConfigHandler.GetConfig('git', BotData.Git);
+		}
+	},
+	Express: {
+		GetRoute: function() {
+			return app.routes;
+		},
+		SetRoute: function(type, route, routeFunction) {
+			if(type == 'get') {
+				app.get(route, routeFunction);
+			} else {
+				app.post(route, routeFunction);
+			}
+		}
 	}
 };
 
 var InitDataStores = function() {
+	BotFunctions.Global.LoadAllData();
 	BotFunctions.Groups.Load();
 	BotFunctions.Admins.Load();
 	BotFunctions.Banned.Load();
 	BotFunctions.Channels.Load();
+	BotFunctions.Git.Load();
+
+	setTimeout(function() {
+		BotFunctions.Global.SaveAllData();
+	}, 60000);
 };
 
 var MainMessageHandler = function(from, to, message, info, Module, callback) {
@@ -241,7 +304,7 @@ var MainMessageHandler = function(from, to, message, info, Module, callback) {
 			return console.error(err);
 		}
 
-		if(output !== null || output !== undefined) {
+		if(output != null || output != undefined) {
 			if(typeof output == 'string') {
 				client.say(to, output);
 			} else {
@@ -403,6 +466,9 @@ var LoadModules = function(callback) {
 					},
 					RegisterJoin: function(joinHandler) {
 						Joins.push(joinHandler);
+					},
+					AddRoute: function(type, route, func) {
+						BotFunctions.Express.SetRoute(type, route, func);
 					}
 				}
 				try {
