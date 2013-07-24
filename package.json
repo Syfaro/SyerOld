@@ -14,6 +14,7 @@
     "mysql": "~2.0.0-alpha8",
     "irc-colors": "~1.0.3",
     "express": "~3.3.4",
-    "ntwitter": "~0.5.0"
+    "ntwitter": "~0.5.0",
+    "log4js": "~0.6.6"
   }
 }

@@ -6,18 +6,34 @@ var fs = require('fs')
   , Knex = require('knex')
   , express = require('express')
   , app = express()
-  , exec = require('child_process').exec;
+  , exec = require('child_process').exec
+  , log4js = require('log4js');
 
-var ircConfig = JSON.parse(fs.readFileSync('config/irc.json'));
+log4js.loadAppender('file');
+log4js.addAppender(log4js.appenders.file('app.log'), 'main');
+log4js.addAppender(log4js.appenders.file('usage.log'), 'usage');
+
+var sysLog = log4js.getLogger('main');
+var usageLog = log4js.getLogger('usage');
+
+try {
+	var ircConfig = JSON.parse(fs.readFileSync('config/irc.json'));
+} catch (e) {
+	sysLog.fatal(e);
+	throw e;
+}
 
 var client = new irc.Client(ircConfig.server, ircConfig.nick, {
 	channels: ircConfig.channels,
 	debug: true
 });
 
-var Knex = require('knex');
-
-var mysqlInfo = JSON.parse(fs.readFileSync('config/mysql.json'));
+try {
+	var mysqlInfo = JSON.parse(fs.readFileSync('config/mysql.json'));
+} catch (e) {
+	sysLog.fatal(e);
+	throw e;
+}
 var knex = Knex.Initialize({
 	client: 'mysql',
 	connection: {
@@ -61,7 +77,7 @@ var BotFunctions = {
 			try {
 				config = JSON.parse(fs.readFileSync('config/' + ConfigName.toLowerCase() + '.json'));
 			} catch (e) {
-				console.log('Error loading config for ' + ConfigName + ', ignoring file');
+				sysLog.warn('Error loading config for ' + ConfigName + ', ignoring file');
 				config = {};
 			}
 
@@ -212,7 +228,9 @@ var BotFunctions = {
 				app.post(route, routeFunction);
 			}
 		}
-	}
+	},
+	UsageLog: usageLog,
+	SystemLog: sysLog
 };
 
 var InitDataStores = function() {
