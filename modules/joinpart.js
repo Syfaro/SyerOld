@@ -5,7 +5,7 @@ var JoinCommand = {
 		Key: 'join'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Joins a channel',
@@ -24,7 +24,7 @@ var PartCommand = {
 		Key: 'part'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Parts a channel',
@@ -43,7 +43,7 @@ var JoinSavedCommand = {
 		Key: 'joinsaved'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Joins saved commands',

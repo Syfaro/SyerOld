@@ -391,7 +391,8 @@ var AddFactoidCommand = {
 		regex: /^(\?\?\+|-\+) (\S+) (.+) ?$/i
 	},
 	Run: {
-		Admin: true
+		Channels: ['debug', 'scrollshelp'],
+		RequiredPermission: 'scrollshelp'
 	},
 	Help: {
 		Text: 'What does it do',
@@ -418,7 +419,8 @@ var EditFactoidCommand = {
 		regex: /^(\?\?~|-~) (\S+) (.+) ?$/i
 	},
 	Run: {
-		Admin: true
+		Channels: ['debug', 'scrollshelp'],
+		RequiredPermission: 'scrollshelp'
 	},
 	Help: {
 		Text: 'What does it do',
@@ -444,7 +446,8 @@ var DeleteFactoid = {
 		regex: /^(\?\?-|-\|) (\S+) ?$/i
 	},
 	Run: {
-		Admin: true
+		Channels: ['debug', 'scrollshelp'],
+		RequiredPermission: 'scrollshelp'
 	},
 	Help: {
 		Text: 'What does it do',
@@ -467,7 +470,8 @@ var AppendFactoidCommand = {
 		regex: /^-~a (\S+) (.+) ?$/i
 	},
 	Run: {
-		Admin: true
+		Channels: ['debug', 'scrollshelp'],
+		RequiredPermission: 'scrollshelp'
 	},
 	Help: {
 		Text: 'Appends text to a factoid',
@@ -502,7 +506,8 @@ var PrependFactoidCommand = {
 		regex: /^-~p (\S+) (.+) ?$/i
 	},
 	Run: {
-		Admin: true
+		Channels: ['debug', 'scrollshelp'],
+		RequiredPermission: 'scrollshelp'
 	},
 	Help: {
 		Text: 'Prepends to a factoid',

@@ -100,6 +100,11 @@ var BotFunctions = {
 		exec: function(command, callback) {
 			exec(command, callback);
 		},
+		GetNickServ: function(nick, callback) {
+			client.whois(nick, function(whois) {
+				callback(whois.account);
+			});
+		},
 		LoadAllData: function() {
 			return BotData = BotFunctions.ConfigHandler.GetConfig('all');
 		},
@@ -229,6 +234,29 @@ var BotFunctions = {
 			}
 		}
 	},
+	Permissions: {
+		AddGroup: function(GroupName) {
+			return BotData.Permissions[GroupName] = [];
+		},
+		RemoveGroup: function(GroupName) {
+			delete BotData.Permissions[GroupName];
+		},
+		AddToGroup: function(GroupName, NickServName) {
+			return BotData.Permissions[GroupName].push(NickServName);
+		},
+		RemoveFromGroup: function(GroupName, NickServName) {
+			return BotData.Permissions[GroupName].remove(NickServName);
+		},
+		IsGroup: function(GroupName, NickServName) {
+			return BotData.Permissions[GroupName].indexOf(NickServName) > -1;
+		},
+		Save: function() {
+			return BotFunctions.ConfigHandler.SaveConfig('perm', BotData.Permissions);
+		},
+		Load: function() {
+			return BotData.Permissions = BotFunctions.ConfigHandler.GetConfig('perm', BotData.Permissions);
+		}
+	},
 	UsageLog: usageLog,
 	SystemLog: sysLog
 };
@@ -240,6 +268,7 @@ var InitDataStores = function() {
 	BotFunctions.Banned.Load();
 	BotFunctions.Channels.Load();
 	BotFunctions.Git.Load();
+	BotFunctions.Permissions.Load();
 
 	setTimeout(function() {
 		BotFunctions.Global.SaveAllData();
@@ -351,11 +380,9 @@ var HandleMessage = function(from, to, message, info) {
 			return;
 		}
 
-		if(Module.AdminOnly) {
-			BotFunctions.Admins.Is(from, function(result) {
-				if(!result) {
-					return callback();
-				} else {
+		if(Module.Permissions) {
+			BotFunctions.Global.GetNickServ(from, function(result) {
+				if(BotFunctions.Permissions.IsGroup(Module.Permissions, result)) {
 					MainMessageHandler(from, to, message, info, Module, callback);
 				}
 			});
@@ -474,7 +501,7 @@ var LoadModules = function(callback) {
 							BuiltCommand.Users = command.Run.Users;
 						}
 
-						BuiltCommand.AdminOnly = command.Run.Admin;
+						BuiltCommand.Permissions = command.Run.RequiredPermission;
 
 						BuiltCommand.Help = command.Help.Text;
 						BuiltCommand.HelpExample = command.Help.Example;

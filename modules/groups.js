@@ -5,7 +5,7 @@ var AddToGroupCommand = {
 		Key: 'groupadd'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Adds a channel to a group',
@@ -26,7 +26,7 @@ var RemoveFromGroupCommand = {
 		Key: 'grouprem'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Removes a channel from a group',
@@ -47,7 +47,7 @@ var AddGroupCommand = {
 		Key: 'addgroup'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Adds a new group',
@@ -67,7 +67,7 @@ var RemoveGroupCommand = {
 		Key: 'remgroup'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Deletes a group',

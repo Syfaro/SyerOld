@@ -17,7 +17,7 @@ var SetJoinNoticeNotifyCommand = {
 		Key: 'joinnotice'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Sets a join notice for a channel',
@@ -56,7 +56,7 @@ var RemoveJoinNoticeNotifiyCommand = {
 		Key: 'nojoinnotice'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Removes a channel notice',

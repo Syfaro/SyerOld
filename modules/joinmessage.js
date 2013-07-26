@@ -19,7 +19,7 @@ var SetJoinMessageNotifyCommand = {
 		Key: 'joinmessage'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Sets a join message for a channel',
@@ -58,7 +58,7 @@ var RemoveJoinMessageNotifiyCommand = {
 		Key: 'nojoinmessage'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Removes a channel join message',

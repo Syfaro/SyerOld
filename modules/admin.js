@@ -5,7 +5,7 @@ var ReloadCommand = {
 		Key: 'reload'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Reloads modules',
@@ -15,7 +15,7 @@ var ReloadCommand = {
 		syer.Global.ReloadModules();
 		callback(null, helpers.reply('Reloaded'));
 	}
-}
+};
 
 var BanFromBotCommand = {
 	Name: 'Ban From Bot',
@@ -24,7 +24,7 @@ var BanFromBotCommand = {
 		Key: 'botban'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Bans user from ALL functions of the bot',
@@ -44,7 +44,7 @@ var UnbanFromBot = {
 		Key: 'botunban'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
 		Text: 'Unbans user from bot',
@@ -57,48 +57,71 @@ var UnbanFromBot = {
 	}
 };
 
-var MakeBotAdmin = {
-	Name: 'Make Bot Admin',
+var SetUserPermission = {
+	Name: 'Set User Permission',
 	Command: {
 		Type: 'command',
-		Key: 'setbotadmin'
+		Key: 'permaddgroup'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
-		Text: 'Sets a user as a bot admin',
-		Example: '.setbotadmin SomeAmazingPerson'
+		Text: 'Adds a user to a group',
+		Example: '.permaddgroup admin SomeAmazingPerson'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
-		syer.Admins.Add(trigger.args[1]);
-		syer.Admins.Save();
-		callback(null, helpers.reply('Set as admin!'));
+		var parts = trigger.args[1].split(' ');
+		syer.Permissions.AddToGroup(parts[0], parts[1]);
+		syer.Permissions.Save();
+		callback(null, helpers.reply('Updated permissions!'));
 	}
 };
 
-var RemoveBotAdmin = {
-	Name: 'Remove Bot Admin',
+var RemoveUserPermission = {
+	Name: 'Remove User Permission',
 	Command: {
 		Type: 'command',
-		Key: 'rembotadmin'
+		Key: 'permremgroup'
 	},
 	Run: {
-		Admin: true
+		RequiredPermission: 'admin'
 	},
 	Help: {
-		Text: 'Removes a bot admin',
-		Example: '.rembotadmin'
+		Text: 'Removes a user from a group',
+		Example: '.permremgroup admin SomeBadPerson'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
+		var parts = trigger.args[1].split(' ');
 		syer.Admins.Remove(trigger.args[1]);
 		syer.Admins.Save();
 		callback(null, helpers.reply('Removed!'));
 	}
 };
 
+var AddPermissionGroup = {
+	Name: 'Add Permission Group',
+	Command: {
+		Type: 'command',
+		Key: 'permgroupadd'
+	},
+	Run: {
+		RemoveUserPermission: 'admin'
+	},
+	Help: {
+		Text: 'Adds a new permissions group',
+		Example: '.permgroupadd mch'
+	},
+	RunFunction: function(trigger, helpers, irc, callback) {
+		syer.Permissions.AddGroup(trigger.args[1]);
+		syer.Permissions.Save();
+		callback(null, helpers.reply('Added!'));
+	}
+};
+
 RegisterCommand(ReloadCommand);
 RegisterCommand(BanFromBotCommand);
 RegisterCommand(UnbanFromBot);
-RegisterCommand(MakeBotAdmin);
-RegisterCommand(RemoveBotAdmin);
+RegisterCommand(SetUserPermission);
+RegisterCommand(RemoveUserPermission);
+RegisterCommand(AddPermissionGroup);
