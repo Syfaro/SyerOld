@@ -8,7 +8,7 @@ var LogLine = {
 		
 	},
 	Help: {
-		Text: 'Logs a line',
+		Text: 'n/a',
 		Example: 'n/a'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
