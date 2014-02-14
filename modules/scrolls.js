@@ -87,11 +87,32 @@ var ScrollsPlayerCommand = {
 			}
 
 			if(data.msg == 'success') {
-				callback(null, helpers.reply('Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%)'));
+				callback(null, helpers.reply('Statistics for ' + data.data.name + ': Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%), Judgement won: ' + data.data.judgementwon + ', Ranked won: ' + data.data.rankedwon + ', Last game played: ' + this.FormatTime(data.data.lastgame)));
 			} else {
 				return callback('Player not found');
 			}
 		});
+	},
+	FormatTime: function(diff){
+		if (diff < 10){
+			return "just now";
+		}
+		
+		var strs = ['second', 'minute', 'hour', 'day', 'week', 'month'];
+
+		var duration = [1, 60, 3600, 86400, 604800, 2630880];
+		var no = 0;
+		
+		var i = duration.length;
+		for (i -= 1; (i >= 0) && ((no = diff / duration[i]) < 1); i--){
+			
+		}
+		
+		no = Math.floor(no); 
+		if (no > 1) {
+			strs[i] += 's';
+		}
+		return no + " " + strs[i] + " ago";
 	}
 };
 
@@ -105,7 +126,7 @@ var ScrollsCardInfoCommand = {
 		Channels: ['debug', 'scrolls', 'scrollshelp']
 	},
 	Help: {
-		Text: 'Displays information about a Scroll',
+		Text: 'Displays information about a scroll',
 		Example: '.scroll sister of the fox'
 	},
 	RunFunction: function(trigger, helpers, irc, callback) {
@@ -117,6 +138,7 @@ var ScrollsCardInfoCommand = {
 			}
 
 			if(data.msg == 'success') {
+				var rarities = [ 'Common', 'Uncommon', 'Rare' ];
 				var cost = '';
 				data.data = data.data[0];
 				if(data.data.costgrowth > 0) {
@@ -127,8 +149,11 @@ var ScrollsCardInfoCommand = {
 					cost = ', Cost: ' + data.data.costenergy + ' energy';
 				}
 				var lines = [];
-				lines.push('Kind: ' + data.data.kind + ', Types: ' + data.data.types + cost + ', AP: ' + data.data.ap + ', AC: ' + data.data.ac + ', HP: ' + data.data.hp);
-				lines.push('Description: ' + data.data.description);
+				lines.push('Kind: ' + data.data.kind + ', Rarity: ' + rarities[data.data.rarity]);
+				if (data.data.kind == "CREATURE" || data.data.kind == "STRUCTURE"){
+					lines[0] +=  + ', Types: ' + data.data.types + cost + ', AP/AC/HP: ' + data.data.ap + '/' + data.data.ac + '/' + data.data.hp;
+				}
+				lines.push('Description: \'' + data.data.description + '\', Flavor: \'' + data.data.flavor + '\'');
 				callback(null, helpers.reply(lines));
 			} else {
 				callback('Scroll not found');
