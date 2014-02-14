@@ -87,7 +87,7 @@ var ScrollsPlayerCommand = {
 			}
 
 			if(data.msg == 'success') {
-				callback(null, helpers.reply('Statistics for ' + data.data.name + ': Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%), Judgement won: ' + data.data.judgementwon + ', Ranked won: ' + data.data.rankedwon + ', Last game played: ' + this.FormatTime(data.data.lastgame)));
+				callback(null, helpers.reply('Statistics for ' + data.data.name + ': Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%), Judgement won: ' + data.data.limitedwon + ', Ranked won: ' + data.data.rankedwon + ', Last game played: ' + this.FormatTime(data.data.lastgame)));
 			} else {
 				return callback('Player not found');
 			}
