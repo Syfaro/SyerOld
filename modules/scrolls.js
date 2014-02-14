@@ -151,7 +151,7 @@ var ScrollsCardInfoCommand = {
 				var lines = [];
 				lines.push('Kind: ' + data.data.kind + ', Rarity: ' + rarities[data.data.rarity]);
 				if (data.data.kind == "CREATURE" || data.data.kind == "STRUCTURE"){
-					lines[0] +=  + ', Types: ' + data.data.types + cost + ', AP/AC/HP: ' + data.data.ap + '/' + data.data.ac + '/' + data.data.hp;
+					lines[0] += ', Types: ' + data.data.types + cost + ', AP/AC/HP: ' + data.data.ap + '/' + data.data.ac + '/' + data.data.hp;
 				}
 				lines.push('Description: \'' + data.data.description + '\', Flavor: \'' + data.data.flavor + '\'');
 				callback(null, helpers.reply(lines));
