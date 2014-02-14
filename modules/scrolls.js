@@ -87,7 +87,7 @@ var ScrollsPlayerCommand = {
 			}
 
 			if(data.msg == 'success') {
-				callback(null, helpers.reply('Statistics for ' + data.data.name + ': Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%), Judgement won: ' + data.data.judgementwon + ', Ranked won: ' + data.data.rankedwon + ', Last game played: ' + this.FormatTime(data.data.lastgame)));
+				callback(null, helpers.reply('Statistics for ' + data.data.name + ': Rating: ' + data.data.rating + ', Rank: ' + data.data.rank + ', Played: ' + data.data.played + ', Won: ' + data.data.won + ' (' + Math.floor(data.data.won / data.data.played * 100) + '%), Judgement won: ' + data.data.limitedwon + ', Ranked won: ' + data.data.rankedwon + ', Last game played: ' + ScrollsPlayerCommand.FormatTime(data.data.lastgame)));
 			} else {
 				return callback('Player not found');
 			}
@@ -151,7 +151,7 @@ var ScrollsCardInfoCommand = {
 				var lines = [];
 				lines.push('Kind: ' + data.data.kind + ', Rarity: ' + rarities[data.data.rarity]);
 				if (data.data.kind == "CREATURE" || data.data.kind == "STRUCTURE"){
-					lines[0] +=  + ', Types: ' + data.data.types + cost + ', AP/AC/HP: ' + data.data.ap + '/' + data.data.ac + '/' + data.data.hp;
+					lines[0] += ', Types: ' + data.data.types + cost + ', AP/AC/HP: ' + data.data.ap + '/' + data.data.ac + '/' + data.data.hp;
 				}
 				lines.push('Description: \'' + data.data.description + '\', Flavor: \'' + data.data.flavor + '\'');
 				callback(null, helpers.reply(lines));
